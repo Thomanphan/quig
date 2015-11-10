@@ -1,29 +1,39 @@
 <?php
 require_once('config.php');
+require_once('class.Cache.php');
 require_once('class.Phrase.php');
 require_once('class.PhrasePNGBuilder.php');
 require_once('loadPhrases.php');
 
-$pngBuilder = new PhrasePNGBuilder( $textFont, $authorFont, $textSize, $authorSize );
 $counter = 0;
+$pngBuilder = new PhrasePNGBuilder( $textFont, $authorFont, $textSize, $authorSize );
 
+// Generate images for all phrases that have not been generated before
 foreach( getPhrases( ) AS $phrase ) {
 	$text = wordwrap( $phrase->phrase( ), $charactersPerLine );
 	$author = $phrase->author( );
 
 	$hash = $phrase->md5( );
-	$imageFile = $imagesFolder.'/'.$hash.'.png';
-
-	$pngBuilder->phrase( $phrase, $charactersPerLine );
-	$image = $pngBuilder->build();
-	// Save the image
-	imagepng( $image, $imageFile );
-	// Unload resources.
-	imagedestroy( $image );
-
-	$counter++;
+	$imageFile = $cacheFolder.'/'.$hash.'.png';
+	if( !file_exists($imageFile) ) {
+		$pngBuilder->phrase( $phrase, $charactersPerLine );
+		$image = $pngBuilder->build();
+		// Save the image
+		imagepng( $image, $imageFile );
+		// Unload resources.
+		imagedestroy( $image );
+		$counter++;
+	}
 }
 
-echo "Generated {$counter} phrases as png files";
+// Update image cache if empty
+$cache = new Cache( $cacheFile, $cacheTime );
+$phrase = $cache->fetch();
+if( $phrase === FALSE ) {
+	$phrase = getPhrase();
+	$cache->store( $phrase );
+}
+
+echo "Generated {$counter} phrases as png files, current is: {$phrase}";
 ?>
 

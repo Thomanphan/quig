@@ -6,7 +6,7 @@ Quote Image Generator: PHP scripts to generate png images from quotes.
 - `phrase.php` changes the current phrase to one chosen at random from all the available images (if the image for the chosen phrase has not been written ti will be written. There's a cache, to mantain the same phrase on various requests.
     - If invoked from console, the phrase will bit displayed as text.
     - If invoked from web, the prase will be displayed as an image.
-- `phrase.png` is provided via ModRewrite rule in .htacces, it redirects to phrase.png.
+- `phrase.png` is provided via ModRewrite rule in `.htaccess`, it redirects to phrase.png.
 - `resetCache.php` removes the currently stored phrase in cache, forcing it to change next time the script is accessed.
 ## Initial configuration
 1. Configure fonts, size and cache time if you need to, in `config.php`.
